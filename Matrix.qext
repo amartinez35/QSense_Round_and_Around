@@ -1,0 +1,8 @@
+{
+	"name" : "Matrix",
+	"description" : "Matrix to display dot and more",
+	"icon" : "extension",
+	"type" : "visualization",
+	"version": "0.1",
+	"author": "Excelcio"
+}
