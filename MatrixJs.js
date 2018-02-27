@@ -1,4 +1,8 @@
-var matrixGene = (function (picasso, id, data, dimName, entete, app) {
+var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation) {
+  
+  var xmin = (orientation=='v' ? 5.1 : 20.1);
+  var ymin = (orientation=='v' ? 20.1 : 5.1);
+
 
   /**
    * Cration d'un composant de sélection, attention c'est du direct
@@ -84,20 +88,15 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app) {
         });
 
         return [
-     /* this.h('div', {
+      this.h('div', {
               style: {
                 "margin-right": "4px",
                 "font-weight": 600
               }
             },
-            d.source.field+':'),*/
-      this.h('div', {style: {
-                "margin-right": "4px",
-                "font-weight": 600
-              }},
             d.value),
-          this.h('div', {}, 
-          ': ' + counts[d.value] + '%')
+          this.h('div', {},
+            ': ' + counts[d.value] + '%')
     ];
       }
     },
@@ -172,7 +171,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app) {
             }
           },
           min: -0.9,
-          max: 5.1
+          max: xmin
         },
         y: {
           data: {
@@ -182,7 +181,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app) {
           },
           invert: true,
           min: -0.9,
-          max: 20.1
+          max: ymin
         },
         color: {
           data: {

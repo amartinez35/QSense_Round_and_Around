@@ -37,7 +37,23 @@ define([
             max: 1
           },
           appearance: {
-            uses: "settings"
+            uses: "settings",
+            items: {
+              orientation: {
+                type: "string",
+                component: "radiobuttons",
+                label: "Orientation radio-buttons",
+                ref: "orientation",
+                options: [{
+                    value: "v",
+                    label: "Vertical"
+                    }, {
+                    value: "h",
+                    label: "Horizontal"
+                   }],
+                default: 'v'
+                }
+            }
           },
           sorting: {
             uses: "sorting"
@@ -98,14 +114,16 @@ define([
 
           it++
         });
-        
+
         it = 0;
         var p = 0;
         var data = [['x', 'y', dim]];
 
         entete.forEach(function (item) {
           for (var i = 0; i < lignePer[it]; i++) {
-            data.push([p % 5, Math.floor(p / 5), item]);
+            var y = (layout.orientation == 'h' ? p % 5 : Math.floor(p / 5));
+            var x = (layout.orientation == 'h' ? Math.floor(p / 5) : p % 5 );
+            data.push([x, y, item]);
             p++;
           }
 
@@ -122,10 +140,10 @@ define([
 
 
           $element.append($matrix);
-          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this));
+          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this), layout.orientation);
         } else {
           $matrix.empty();
-          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this));
+          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this), layout.orientation);
         }
         return qlik.Promise.resolve();
       }
