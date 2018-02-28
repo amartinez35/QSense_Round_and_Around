@@ -1,4 +1,4 @@
-var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation) {
+var matrixGene = (function (picasso, id, data, dimName, app, orientation, mode) {
 
   var xmin = (orientation == 'v' ? 5.1 : 20.1);
   var ymin = (orientation == 'v' ? 20.1 : 5.1);
@@ -12,16 +12,18 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
     require: ['chart', 'renderer'],
     renderer: 'dom',
     on: {
-      clic(e) {
-        const b = this.chart.element.getBoundingClientRect();
-        this.state.nodes = this.chart.shapesAt({
-          x: e.clientX - b.left,
-          y: e.clientY - b.top
-        });
-        this.select();
+      clic(e, data, dimName, mode) {
+        if (mode == 'analysis') {
+          const b = this.chart.element.getBoundingClientRect();
+          this.state.nodes = this.chart.shapesAt({
+            x: e.clientX - b.left,
+            y: e.clientY - b.top
+          });
+          this.select(data, dimName);
+        }
       }
     },
-    select() {
+    select(data, dimName) {
       const shapes = this.state.nodes.filter(n => n.type !== 'container' && n.data);
       if (!shapes.length) {
         return [];
@@ -31,7 +33,6 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
       const rows = Object.keys(targetNode.data).filter(prop => prop !== 'value' && prop !== 'label').map(dataProp => {
 
         if (dataProp !== 'source' && targetNode.data[dataProp].source.field == dimName) {
-          console.log(dimName);
           app.field(dimName).selectValues([targetNode.data[dataProp].label], true, true);
         }
 
@@ -66,13 +67,15 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
     // By defining a `on` property we're able to bind custom events to the component.
     on: {
       // From the chart instance we'll be able to emit a the `hover` event.
-      hover(e) {
-        const b = this.chart.element.getBoundingClientRect();
-        this.state.nodes = this.chart.shapesAt({
-          x: e.clientX - b.left,
-          y: e.clientY - b.top
-        });
-        this.renderer.render(this.buildNodes())
+      hover(e, data, dimName, mode) {
+        if (mode == 'analysis') {
+          const b = this.chart.element.getBoundingClientRect();
+          this.state.nodes = this.chart.shapesAt({
+            x: e.clientX - b.left,
+            y: e.clientY - b.top
+          });
+          this.renderer.render(this.buildNodes(data, dimName));
+        }
       }
     },
     created() {
@@ -80,13 +83,14 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
         nodes: []
       };
     },
-    buildRow(d) {
+    buildRow(d, data, dimName) {
       if (d.source.field == dimName) {
 
-        counts=[];
-        data.forEach(function(item) {
+        counts = [];
+        data.forEach(function (item) {
           counts[item[2]] = (counts[item[2]] || 0) + 1;
         });
+
 
         return [
           this.h('div', {
@@ -100,10 +104,9 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
         ];
       }
     },
-    buildNodes() {
+    buildNodes(data, dimName) {
       // Filter out any node that doesn't have any data bound to it or is a container node.
       const shapes = this.state.nodes.filter(n => n.type !== 'container' && n.data);
-      //console.log(shapes);
       if (!shapes.length) {
         return [];
       }
@@ -120,7 +123,7 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
               display: 'flex'
             }
           },
-          this.buildRow(dataProp !== 'source' ? targetNode.data[dataProp] : targetNode.data)
+          this.buildRow(dataProp !== 'source' ? targetNode.data[dataProp] : targetNode.data, data, dimName)
         )
       });
 
@@ -128,8 +131,8 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
         this.h('div', {
             style: {
               position: 'relative',
-              left: `${left}px`,
-              top: `${top}px`,
+              left: left + 'px',
+              top: top + 'px',
               background: this.settings.background,
               color: '#888',
               display: 'inline-block',
@@ -265,12 +268,12 @@ var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation)
         type: 'native',
         events: {
           //au survole
-          mousemove: function(e) {
-            this.chart.component('tooltip').emit('hover', e);
+          mousemove: function (e) {
+            this.chart.component('tooltip').emit('hover', e, data, dimName, mode);
           },
           //au clic
-          mousedown: function(e) {
-            this.chart.component('selecteur').emit('clic', e);
+          mousedown: function (e) {
+            this.chart.component('selecteur').emit('clic', e, data, dimName, mode);
           }
         }
       }]

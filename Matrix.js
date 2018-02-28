@@ -47,8 +47,7 @@ define([
                 ref: "orientation",
                 options: [{
                     value: "v",
-                    label: "º",
-                    "font-family": "LUIicons"
+                    label: "Vertical"
                     }, {
                     value: "h",
                     label: "Horizontal"
@@ -78,7 +77,7 @@ define([
       },
       //affichage de l'extension
       paint: function ($element, layout) {
-
+        
         //id de l'objet
         var id = layout.qInfo.qId + '_matrix';
         //l'objet
@@ -127,6 +126,7 @@ define([
         var p = 0;
         var data = [['x', 'y', dim]];
 
+        //calul des coordonnées des points
         entete.forEach(function (item) {
           for (var i = 0; i < lignePer[it]; i++) {
             var y = (layout.orientation == 'h' ? p % 5 : Math.floor(p / 5));
@@ -147,10 +147,10 @@ define([
 
 
           $element.append($matrix);
-          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this), layout.orientation);
+          matrixGene(picasso, id, data, dim, qlik.currApp(this), layout.orientation, qlik.navigation.getMode());
         } else {
           $matrix.empty();
-          matrixGene(picasso, id, data, dim, entete, qlik.currApp(this), layout.orientation);
+          matrixGene(picasso, id, data, dim, qlik.currApp(this), layout.orientation, qlik.navigation.getMode());
         }
         return qlik.Promise.resolve();
       }
