@@ -1,8 +1,11 @@
 {
 	"name" : "Matrix",
-	"description" : "Matrix to display dot and more",
-	"icon" : "extension",
+	"description" : "Matrix to display dot",
+	"icon" : "extension icon-image-excelcio",
 	"type" : "visualization",
-	"version": "0.1",
-	"author": "Excelcio"
+	"version": "1.0",
+	"author": "Excelcio",
+  "homepage": "http://excelcio.com/",
+  "keywords": "qlik-sense, visualization",
+  "preview": "Excelcio.png"
 }

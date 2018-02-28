@@ -1,7 +1,8 @@
-var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation) {
-  
-  var xmin = (orientation=='v' ? 5.1 : 20.1);
-  var ymin = (orientation=='v' ? 20.1 : 5.1);
+var matrixGene = (function(picasso, id, data, dimName, entete, app, orientation) {
+
+  var xmin = (orientation == 'v' ? 5.1 : 20.1);
+  var ymin = (orientation == 'v' ? 20.1 : 5.1);
+  var counts = [];
 
 
   /**
@@ -30,6 +31,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
       const rows = Object.keys(targetNode.data).filter(prop => prop !== 'value' && prop !== 'label').map(dataProp => {
 
         if (dataProp !== 'source' && targetNode.data[dataProp].source.field == dimName) {
+          console.log(dimName);
           app.field(dimName).selectValues([targetNode.data[dataProp].label], true, true);
         }
 
@@ -81,23 +83,21 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
     buildRow(d) {
       if (d.source.field == dimName) {
 
-
-        var counts = {};
-        data.forEach(function (item) {
+        counts=[];
+        data.forEach(function(item) {
           counts[item[2]] = (counts[item[2]] || 0) + 1;
         });
 
         return [
-      this.h('div', {
+          this.h('div', {
               style: {
                 "margin-right": "4px",
                 "font-weight": 600
               }
             },
             d.value),
-          this.h('div', {},
-            ': ' + counts[d.value] + '%')
-    ];
+          this.h('div', {}, ': ' + counts[d.value] + '%')
+        ];
       }
     },
     buildNodes() {
@@ -125,7 +125,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
       });
 
       return [
-      this.h('div', {
+        this.h('div', {
             style: {
               position: 'relative',
               left: `${left}px`,
@@ -141,7 +141,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
             }
           },
           rows)
-    ];
+      ];
     },
     // picasso.js uses snabbdom(https://github.com/snabbdom/snabbdom) for dom-manipulation and exposes the snabbdom helper function `h` as a parameter to the `render` function. We'll use `h` to render our tooltip, but as we don't need it right here, we'll store it in the context for later use.
     render(h) {
@@ -163,7 +163,9 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
       data: data
     }],
     settings: {
+      //les echelles
       scales: {
+        //x
         x: {
           data: {
             extract: {
@@ -173,6 +175,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
           min: -0.9,
           max: xmin
         },
+        //y
         y: {
           data: {
             extract: {
@@ -183,6 +186,7 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
           min: -0.9,
           max: ymin
         },
+        //la couleur
         color: {
           data: {
             extract: {
@@ -190,75 +194,86 @@ var matrixGene = (function (picasso, id, data, dimName, entete, app, orientation
             }
           },
           type: 'color',
+          //utilisation d'une palette de couleur fix
           range: [
-                  "#1abc9c",
-                  "#2ecc71",
-                  "#3498db",
-                  "#e74c3c",
-                  "#f39c12",
-                  "#aa4499",
-                  "#34495e",
-                  "#7f8c8d"
-               ]
+            "#1abc9c",
+            "#2ecc71",
+            "#3498db",
+            "#e74c3c",
+            "#f39c12",
+            "#aa4499",
+            "#34495e",
+            "#7f8c8d"
+          ]
         }
       },
-      components: [{
-        key: 'p',
-        type: 'point',
-        data: {
-          extract: {
-            field: 'x',
-            props: {
-              x: {
-                field: 'x'
-              },
-              y: {
-                field: 'y'
-              },
-              fill: {
-                field: dimName,
-                ref: dimName
+      //la liste des composants utilisées dans le graphique
+      components: [
+        //les points
+        {
+          key: 'p',
+          type: 'point',
+          data: {
+            extract: {
+              field: 'x',
+              props: {
+                x: {
+                  field: 'x'
+                },
+                y: {
+                  field: 'y'
+                },
+                fill: {
+                  field: dimName,
+                  ref: dimName
+                }
               }
             }
+          },
+          settings: {
+            x: {
+              scale: 'x'
+            },
+            y: {
+              scale: 'y'
+            },
+            fill: {
+              scale: 'color'
+            },
+            shape: 'circle'
           }
         },
-        settings: {
-          x: {
-            scale: 'x'
-          },
-          y: {
-            scale: 'y'
-          },
-          fill: {
-            scale: 'color'
-          },
-          shape: 'circle'
-        }
-    }, {
-        type: 'legend-cat',
-        scale: 'color',
-        dock: 'left'
-    }, {
-        key: 'tooltip',
-        type: 'tooltip',
-        background: 'white' // Override our default setting
-}, {
-        key: 'selecteur',
-        type: 'selecteur'
-}],
-      interactions: [
+        //la légende
         {
-          type: 'native',
-          events: {
-            mousemove: function (e) {
-              this.chart.component('tooltip').emit('hover', e);
-            },
-            mousedown: function (e) {
-              this.chart.component('selecteur').emit('clic', e);
-            }
+          type: 'legend-cat',
+          scale: 'color',
+          dock: 'left'
+        },
+        //le tooltip
+        {
+          key: 'tooltip',
+          type: 'tooltip',
+          background: 'white' // Override our default setting
+        },
+        {
+          key: 'selecteur',
+          type: 'selecteur'
+        }
+      ],
+      //création des interactions
+      interactions: [{
+        type: 'native',
+        events: {
+          //au survole
+          mousemove: function(e) {
+            this.chart.component('tooltip').emit('hover', e);
+          },
+          //au clic
+          mousedown: function(e) {
+            this.chart.component('selecteur').emit('clic', e);
           }
         }
-      ]
+      }]
     }
   });
 });

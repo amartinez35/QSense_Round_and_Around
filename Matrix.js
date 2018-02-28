@@ -5,7 +5,8 @@ define([
   'jquery',
   'qlik',
   './picasso',
-  './MatrixJs'
+  './MatrixJs', 
+  'css!./css/style.css'
   ],
   function ($, qlik, picasso, matrix) {
     'use strict';
@@ -41,12 +42,13 @@ define([
             items: {
               orientation: {
                 type: "string",
-                component: "radiobuttons",
-                label: "Orientation radio-buttons",
+                component: "buttongroup",
+                label: "Présentation",
                 ref: "orientation",
                 options: [{
                     value: "v",
-                    label: "Vertical"
+                    label: "º",
+                    "font-family": "LUIicons"
                     }, {
                     value: "h",
                     label: "Horizontal"
@@ -94,17 +96,23 @@ define([
         var ligne = [];
         var lignePer = [];
 
+        //création des entêtes de colonne
+        //création des lignes
+        //calul du total
         cube.forEach(function (item) {
           entete.push(item[0].qText);
           ligne.push(item[1].qNum);
           total += item[1].qNum;
         });
 
-
+ 
+        //préparation pour le calcul des %
         var it = 1;
         var itTotal = 0;
 
+        
         ligne.forEach(function (item) {
+          //pour la dernière valeur on passe par 100 - le total pour être sur des 100%
           if (it == ligne.length) {
             lignePer.push(100 - itTotal);
           } else {
@@ -129,7 +137,6 @@ define([
 
           it++;
         });
-
 
         if (!$matrix.length) {
 
