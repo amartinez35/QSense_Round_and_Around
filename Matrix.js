@@ -108,7 +108,7 @@ define([
         //préparation pour le calcul des %
         var it = 1;
         var itTotal = 0;
-
+        
         
         ligne.forEach(function (item) {
           //pour la dernière valeur on passe par 100 - le total pour être sur des 100%
