@@ -10,6 +10,26 @@ define([
   ],
   function ($, qlik, picasso, matrix) {
     'use strict';
+  
+      var aboutImage = {
+      type: "string",
+      component: "text",
+      ref: "aboutImage",
+      label: '<img src="../extensions/QSenseGauge/Excelcio.png">',
+      show: function(data){
+        $('[tid="aboutImage"]').children().empty();
+        $('[tid="aboutImage"]').children().append('<img src="../extensions/QSenseGauge/Excelcio.png">');
+        return true;
+      }
+    };
+	
+	    var aboutLien = {
+      type: "string",
+      component: "link",
+      ref: "aboutLien",
+      label: "Excelcio",
+      url: "http://www.excelcio.com"
+    }
 
     return {
       initialProperties: {
@@ -64,6 +84,21 @@ define([
             items: {
               dataHandling: {
                 uses: "dataHandling"
+              }
+            }
+          },
+          about:{
+            label: "About",
+            type: "items",
+            items:{
+              	              About:{
+                ref:"about",
+                type: "items",
+                label: "About Excelcio" ,
+                items:{
+                  aboutImage: aboutImage,
+                  aboutLien: aboutLien
+                }
               }
             }
           }
