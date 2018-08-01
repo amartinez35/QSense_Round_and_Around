@@ -15,10 +15,10 @@ define([
       type: "string",
       component: "text",
       ref: "aboutImage",
-      label: '<img src="../extensions/QSenseGauge/Excelcio.png">',
+      label: '<img src="../extensions/Matrix/Excelcio.png">',
       show: function(data){
         $('[tid="aboutImage"]').children().empty();
-        $('[tid="aboutImage"]').children().append('<img src="../extensions/QSenseGauge/Excelcio.png">');
+        $('[tid="aboutImage"]').children().append('<img src="../extensions/Matrix/Excelcio.png">');
         return true;
       }
     };
